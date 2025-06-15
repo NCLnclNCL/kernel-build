@@ -70,8 +70,7 @@ jobs:
     - name: Prepare AK3
       run: |
         cd $GITHUB_WORKSPACE/project/AnyKernel3
-      #  cp $GITHUB_WORKSPACE/project/Image.gz-dtb Image.gz-dtb
-      #  zip -r9 $GITHUB_WORKSPACE/project/OverHeat-dev.zip -- *
+      
         cp $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu Image.gz-dtb
         zip -r9 $GITHUB_WORKSPACE/project/OverHeat-dev-ksu.zip -- *
         
@@ -79,7 +78,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-        #  ${{ github.workspace }}/project/OverHeat-dev.zip
+        
           ${{ github.workspace }}/project/OverHeat-dev-ksu.zip
         name: OverHeat-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
