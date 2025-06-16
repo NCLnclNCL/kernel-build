@@ -64,25 +64,19 @@ jobs:
         PATH=$GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
         export TZ="Asia/Jakarta"
         export DATE=$(date "+%Y%m%d-%H%M")
+        echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
         export ARCH=arm64                
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-        cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
-
-    - name: Prepare AK3
-      run: |
-        cd $GITHUB_WORKSPACE/project/AnyKernel3
-      
-        cp $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu Image.gz-dtb
-        zip -r9 $GITHUB_WORKSPACE/project/OverHeat-dev-ksu.zip -- *
-        
+        cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb   
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
         
-          ${{ github.workspace }}/project/OverHeat-dev-ksu.zip
-        name: OverHeat-${{ env.BUILD_DATE }}
+          ${{ github.workspace }}/project/Image.gz-dtb
+        name: Genom-vince-${{ env.KERNEL_VER }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
           Repo: ${{ github.event.inputs.KERNEL_REPO }}
