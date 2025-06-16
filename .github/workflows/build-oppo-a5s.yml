@@ -52,12 +52,6 @@ jobs:
         tar -C $GITHUB_WORKSPACE/project/clang/ -Jxf ${CLANG_URL##*/}
         ls $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
 
-    - name: Prepare Kernel
-      run: |
-        cd $GITHUB_WORKSPACE/project
-        git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --recurse-submodules --depth=1 &> /dev/null
-        git clone -b master https://github.com/zainarbani/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
-
     - name: Building Kernel
       run: |
         which python
@@ -66,7 +60,7 @@ jobs:
         export TZ="Asia/Jakarta"
         export DATE=$(date "+%Y%m%d-%H%M")
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
+        echo 'KERNEL_VER="$(make kernelversion)"' >> $GITHUB_ENV
         export ARCH=arm64                
         export ODM_WT_EDIT=yes
         export VENDOR_EDIT=1
