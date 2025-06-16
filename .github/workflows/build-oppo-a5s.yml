@@ -34,32 +34,15 @@ jobs:
         git config --global user.name "bot"
         git config --global user.email "bot@email.com"
         mkdir -p $GITHUB_WORKSPACE/project
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Cache Python2
-      id: cache-python2
-      uses: actions/cache@v4
-      with:
-        path: ~/.local/python2
-        key: python2-cache-${{ runner.os }}
-    - name: Install Python2.7.18
-      if: steps.cache-python2.outputs.cache-hit != 'true'
+    - name: Install python2
       run: |
-        mkdir -p $GITHUB_WORKSPACE/project
         cd $GITHUB_WORKSPACE/project
         wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
         tar xzf Python-2.7.18.tgz
         cd Python-2.7.18
-        ./configure --prefix=$HOME/.local/python2 --enable-optimizations
-        make -j$(nproc)
-        make install
-        sudo update-alternatives --install /usr/bin/python python $HOME/.local/bin/python2.7 1
-        sudo ln -s "$HOME/.local/python2/bin/python2.7" "/usr/bin/python2"
-    - name: Export Python2 path
-      run: echo "$HOME/.local/python2/bin" >> $GITHUB_PATH
-
-    - name: Test Python2
-      run: python2 --version
+        sudo make altinstall
+        sudo update-alternatives --install /usr/bin/python python /usr/local/bin/python2.7 1
+        sudo ln -s "/usr/local/bin/python2.7" "/usr/bin/python2"
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
