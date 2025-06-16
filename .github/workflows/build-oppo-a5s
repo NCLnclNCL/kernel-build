@@ -1,0 +1,88 @@
+name: Kernel Build redmi 5
+on:
+  workflow_dispatch:
+    inputs:
+      KERNEL_REPO:
+        description: 'KERNEL_REPO'
+        required: true
+        default: 'https://github.com/oppo-source/A5S-8.1-kernel-source'
+      KERNEL_BRANCH:
+        description: 'KERNEL_BRANCH'
+        required: true
+        default: 'master'
+      KERNEL_DEFCONFIG:
+        description: 'KERNEL_DEFCONFIG'
+        required: true
+        default: 'oppo6765_18511_defconfig'
+      KERNEL_HOTFIX:
+        description: 'KERNEL_HOTFIX'
+        required: false
+        default: 'N/A'
+
+jobs:
+  build:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+    - name: Prepare Env
+      run: |
+        sudo apt update
+        sudo apt -y install gawk aria2 git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler
+        git config --global user.name "bot"
+        git config --global user.email "bot@email.com"
+        mkdir -p $GITHUB_WORKSPACE/project
+    - name: Install python2
+      run: |
+        cd $GITHUB_WORKSPACE/project
+        wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+        tar xzf Python-2.7.18.tgz
+        cd Python-2.7.18
+        sudo ./configure --enable-optimizations
+        sudo make altinstall
+        sudo update-alternatives --install /usr/bin/python python /usr/local/bin/python2.7 1
+    - name: Prepare TC
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/project/clang
+        CLANG_URL=https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/aarch64-linux-gnu/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz
+        aria2c $CLANG_URL  &> /dev/null
+        tar -C $GITHUB_WORKSPACE/project/clang/ -Jxf ${CLANG_URL##*/}
+        ls $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
+
+    - name: Prepare Kernel
+      run: |
+        cd $GITHUB_WORKSPACE/project
+        git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --recurse-submodules --depth=1 &> /dev/null
+        git clone -b master https://github.com/zainarbani/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
+
+    - name: Building Kernel
+      run: |
+        which python
+        cd $GITHUB_WORKSPACE/project/linux
+        PATH=$GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
+        export TZ="Asia/Jakarta"
+        export DATE=$(date "+%Y%m%d-%H%M")
+        echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
+        export ARCH=arm64                
+        export ODM_WT_EDIT=yes
+        export VENDOR_EDIT=1
+        make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+        make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+        cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb   
+    - name: Upload Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+        
+          ${{ github.workspace }}/project/Image.gz-dtb
+        name: Genom-vince-${{ env.KERNEL_VER }}
+        tag_name: ${{ env.BUILD_DATE }}
+        body: |
+          Repo: ${{ github.event.inputs.KERNEL_REPO }}
+          Branch: ${{ github.event.inputs.KERNEL_BRANCH }}
+          Config: ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
