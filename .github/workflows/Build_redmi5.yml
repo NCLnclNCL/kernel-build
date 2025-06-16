@@ -49,7 +49,7 @@ jobs:
         CLANG_URL=https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/aarch64-linux-gnu/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz
         aria2c $CLANG_URL  &> /dev/null
         tar -C $GITHUB_WORKSPACE/project/clang/ -Jxf ${CLANG_URL##*/}
-        ls $GITHUB_WORKSPACE/project/clang/
+        ls $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
 
     - name: Prepare Kernel
       run: |
@@ -61,7 +61,7 @@ jobs:
       run: |
         which python
         cd $GITHUB_WORKSPACE/project/linux
-        PATH=$GITHUB_WORKSPACE/project/clang/bin:$PATH
+        PATH=$GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
         export TZ="Asia/Jakarta"
         export DATE=$(date "+%Y%m%d-%H%M")
         export ARCH=arm64                
