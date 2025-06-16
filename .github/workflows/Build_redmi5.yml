@@ -30,11 +30,20 @@ jobs:
     - name: Prepare Env
       run: |
         sudo apt update
-        sudo apt -y install gawk aria2 git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3
+        sudo apt -y install gawk aria2 git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler
         git config --global user.name "bot"
         git config --global user.email "bot@email.com"
         mkdir -p $GITHUB_WORKSPACE/project
-          
+    - name: Install python2
+      run: |
+        cd $GITHUB_WORKSPACE/project
+        wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+        tar xzf Python-2.7.18.tgz
+        cd Python-2.7.18
+        sudo ./configure --enable-optimizations
+        sudo make altinstall
+        sudo ln -s "/usr/local/bin/python2.7" "/usr/bin/python"
+        sudo update-alternatives --install /usr/bin/python python /usr/bin/python2 1
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
