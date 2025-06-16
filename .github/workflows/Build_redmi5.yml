@@ -42,7 +42,7 @@ jobs:
         cd Python-2.7.18
         sudo ./configure --enable-optimizations
         sudo make altinstall
-        sudo ln -s "/usr/local/bin/python2.7" "/usr/bin/python"
+        sudo update-alternatives --install /usr/bin/python python /usr/local/bin/python2.7 1
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
