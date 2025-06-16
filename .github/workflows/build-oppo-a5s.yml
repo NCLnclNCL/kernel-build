@@ -5,7 +5,7 @@ on:
       KERNEL_REPO:
         description: 'KERNEL_REPO'
         required: true
-        default: 'https://github.com/oppo-source/A5S-8.1-kernel-source'
+        default: 'https://github.com/NCLnclNCL/A5S-8.1-kernel-source'
       KERNEL_BRANCH:
         description: 'KERNEL_BRANCH'
         required: true
