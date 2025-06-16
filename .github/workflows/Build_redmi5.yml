@@ -58,6 +58,7 @@ jobs:
 
     - name: Building Kernel
       run: |
+        python
         cd $GITHUB_WORKSPACE/project/linux
         PATH=$GITHUB_WORKSPACE/project/clang/bin:$PATH
         export TZ="Asia/Jakarta"
