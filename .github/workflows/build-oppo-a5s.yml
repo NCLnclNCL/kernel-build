@@ -51,6 +51,10 @@ jobs:
         aria2c $CLANG_URL  &> /dev/null
         tar -C $GITHUB_WORKSPACE/project/clang/ -Jxf ${CLANG_URL##*/}
         ls $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
+    - name: Prepare Kernel
+      run: |
+        cd $GITHUB_WORKSPACE/project
+        git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --recurse-submodules --depth=1 &> /dev/null
 
     - name: Building Kernel
       run: |
@@ -60,7 +64,7 @@ jobs:
         export TZ="Asia/Jakarta"
         export DATE=$(date "+%Y%m%d-%H%M")
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
+        echo 'KERNEL_VER="$(make kernelversion)"' >> $GITHUB_ENV
         export ARCH=arm64                
         export ODM_WT_EDIT=yes
         export VENDOR_EDIT=1
@@ -73,7 +77,7 @@ jobs:
         files: |
         
           ${{ github.workspace }}/project/Image.gz-dtb
-        name: oppo-a5s-4.9.80
+        name: oppo-a5s-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
           Repo: ${{ github.event.inputs.KERNEL_REPO }}
