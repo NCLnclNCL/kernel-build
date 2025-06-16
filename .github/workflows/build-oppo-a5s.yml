@@ -1,4 +1,4 @@
-name: Kernel Build redmi 5
+name: Kernel Build oppo a5s
 on:
   workflow_dispatch:
     inputs:
