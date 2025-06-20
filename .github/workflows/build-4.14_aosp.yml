@@ -38,7 +38,7 @@ jobs:
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
-        CLANG_URL=$(curl -Ls https://raw.githubusercontent.com/ZyCromerZ/Clang/refs/heads/main/Clang-16-link.txt)
+        CLANG_URL=https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android14-release/clang-r487747c.tar.gz
         aria2c $CLANG_URL &> /dev/null
         tar -C $GITHUB_WORKSPACE/project/clang/ -zxf ${CLANG_URL##*/}
 
@@ -58,7 +58,7 @@ jobs:
         export ARCH=arm64
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-        make -j$(nproc --all) O=out CC=clang ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LLVM=1 LLVM_IAS=1 LD=ld.lld NM=llvm-nm AR=llvm-ar OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump
+        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld LLVM=1 LLVM_IAS=1
         cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
 
     - name: Prepare AK3
