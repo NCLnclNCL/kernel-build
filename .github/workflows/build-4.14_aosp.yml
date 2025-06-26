@@ -1,3 +1,4 @@
+
 name: Kernel Build 4.14 aosp
 on:
   workflow_dispatch:
@@ -9,7 +10,7 @@ on:
       KERNEL_BRANCH:
         description: 'KERNEL_BRANCH'
         required: true
-        default: 'lineage-21'
+        default: 'lineage-20'
       KERNEL_DEFCONFIG:
         description: 'KERNEL_DEFCONFIG'
         required: true
