@@ -28,13 +28,13 @@ jobs:
     - name: Compress built Python2
       run: |
         cd ${{ github.workspace }}
-        tar czf python2.7.18.tar.gz python2
+        zip -r python2.7.18.zip python2
 
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         name: "Python2.7.18 Build"
         tag_name: "python2.7.18"
-        files: python2.7.18.tar.gz
+        files: python2.7.18.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
