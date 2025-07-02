@@ -37,9 +37,9 @@ jobs:
     - name: Install python2
       run: |
         cd $GITHUB_WORKSPACE/project
-        wget https://github.com/NCLnclNCL/kernel-build/releases/download/python2.7.18/python2.7.18.tar.gz
+        wget https://github.com/NCLnclNCL/kernel-build/releases/download/python2.7.18/python2.7.18.zip
         ls
-        tar -C $GITHUB_WORKSPACE/project -Jxf python2.7.18.tar.gz   
+        7z x python2.7.18.zip   
         sudo update-alternatives --install /usr/bin/python python $GITHUB_WORKSPACE/project/Python2.7.18/python2/bin/python2.7 1
         sudo ln -s "$GITHUB_WORKSPACE/project/Python2.7.18/python2/bin/python2.7" "usr/bin/python2"
     - name: Prepare TC
