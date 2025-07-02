@@ -43,7 +43,7 @@ jobs:
         cd python2
         ls
         sudo update-alternatives --install /usr/bin/python python $GITHUB_WORKSPACE/project/python2/bin/python2.7 1
-        sudo ln -s "$GITHUB_WORKSPACE/project/python2/bin/python2.7" "usr/bin/python2"
+        sudo ln -s "$GITHUB_WORKSPACE/project/python2/bin/python2.7" "/usr/bin/python2"
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
