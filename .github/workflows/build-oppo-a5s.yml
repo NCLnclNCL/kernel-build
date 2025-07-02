@@ -39,9 +39,9 @@ jobs:
         cd $GITHUB_WORKSPACE/project
         wget https://github.com/NCLnclNCL/kernel-build/releases/download/python2.7.18/python2.7.18.tar.gz
         ls
-        tar -C $GITHUB_WORKSPACE/project -Jxf python-2.7.18.tar.gz   
-        sudo update-alternatives --install /usr/bin/python python $GITHUB_WORKSPACE/project/Python-2.7.18/python2/bin/python2.7 1
-        sudo ln -s "$GITHUB_WORKSPACE/project/Python-2.7.18/python2/bin/python2.7" "usr/bin/python2"
+        tar -C $GITHUB_WORKSPACE/project -Jxf python2.7.18.tar.gz   
+        sudo update-alternatives --install /usr/bin/python python $GITHUB_WORKSPACE/project/Python2.7.18/python2/bin/python2.7 1
+        sudo ln -s "$GITHUB_WORKSPACE/project/Python2.7.18/python2/bin/python2.7" "usr/bin/python2"
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
