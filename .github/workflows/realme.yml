@@ -69,6 +69,7 @@ jobs:
         export VENDOR_EDIT=1
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
         make clean
+        make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         make -j$(nproc --all) O=out \
                       ARCH=arm64 \
                       CC=clang \
