@@ -35,6 +35,10 @@ jobs:
         git config --global user.name "bot"
         git config --global user.email "bot@email.com"
         mkdir -p $GITHUB_WORKSPACE/project
+    - name: Install aarch64-linux-gnu
+      run: |
+        sudo apt-get install aarch64-linux-gnu
+        export PATH=/usr/aarch64-linux-gnu/bin/:$PATH:/usr/lib/gcc/x86_64-linux-gnu/9:/usr/lib/gcc/x86_64-linux-gnu/9/lto-wrapper
     - name: Install python2
       run: |
         cd $GITHUB_WORKSPACE/project
@@ -61,7 +65,7 @@ jobs:
     - name: Building Kernel
       run: |
         cd $GITHUB_WORKSPACE/project/linux
-        PATH=$GITHUB_WORKSPACE/project/clang/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/project/clang/bin:$PATH
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
         echo "CLANG_VER=$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')" >> $GITHUB_ENV
         export ARCH=arm64
