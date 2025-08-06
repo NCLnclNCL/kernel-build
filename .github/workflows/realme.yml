@@ -73,7 +73,7 @@ jobs:
                       ARCH=arm64 \
                       CC=clang \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
-                      CROSS_COMPILE=aarch64-linux-android-        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld LLVM=1 LLVM_IAS=1
+                      CROSS_COMPILE=aarch64-linux-android-  
         cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
 
     - name: Prepare AK3
