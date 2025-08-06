@@ -48,7 +48,7 @@ jobs:
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
-        CLANG_URL=https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android10-release/clang-r353983c.tar.gz
+        CLANG_URL=https://github.com/ZyCromerZ/Clang/releases/download/10.0.1-20220724-release/Clang-10.0.1-20220724.tar.gz
         aria2c $CLANG_URL &> /dev/null
         tar -C $GITHUB_WORKSPACE/project/clang/ -zxf ${CLANG_URL##*/}
 
