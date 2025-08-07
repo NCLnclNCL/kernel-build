@@ -51,7 +51,13 @@ jobs:
         CLANG_URL=https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android10-release/clang-r353983c.tar.gz
         aria2c $CLANG_URL &> /dev/null
         tar -C $GITHUB_WORKSPACE/project/clang/ -zxf ${CLANG_URL##*/}
-
+    - name: Gcc 4.9
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/project/gcc
+        CLANG_URL=https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/android10-qpr1-b-release.tar.gz
+        aria2c $CLANG_URL &> /dev/null
+        tar -C $GITHUB_WORKSPACE/project/gcc/ -zxf ${CLANG_URL##*/}
+        
     - name: Prepare Kernel
       run: |
         cd $GITHUB_WORKSPACE/project
@@ -61,7 +67,7 @@ jobs:
     - name: Building Kernel
       run: |
         cd $GITHUB_WORKSPACE/project/linux
-        export PATH=$GITHUB_WORKSPACE/project/clang/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/project/clang/bin:$GITHUB_WORKSPACE/project/gcc/bin:$PATH:
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo "CLANG_VER=$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')" >> $GITHUB_ENV
         export ARCH=arm64
