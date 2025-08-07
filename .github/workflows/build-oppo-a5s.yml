@@ -55,34 +55,41 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/project
         git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --recurse-submodules --depth=1 &> /dev/null
-
+        git clone -b Old https://github.com/NCLnclNCL/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
     - name: Building Kernel
       run: |
         which python
         cd $GITHUB_WORKSPACE/project/linux
         PATH=$GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
         export TZ="Asia/Jakarta"
-        export DATE=$(date "+%Y%m%d-%H%M")
-        echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+        export DATE=$(date "+%Y%m%d-%H%M%S")
+        echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo 'KERNEL_VER="$(make kernelversion)"' >> $GITHUB_ENV
         export ARCH=arm64                
         export ODM_WT_EDIT=yes
         export VENDOR_EDIT=1
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
-        cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb   
+        cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
+
+    - name: Prepare AK3
+      run: |
+        cd $GITHUB_WORKSPACE/project/AnyKernel3
+      
+        cp $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu Image.gz-dtb
+        zip -r9 $GITHUB_WORKSPACE/project/kernel-4.9${{ env.BUILD_DATE }}.zip -- *
+        
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
         
-          ${{ github.workspace }}/project/Image.gz-dtb
-        name: oppo-a5s-4.9.80-${{ env.BUILD_DATE }}
+          ${{ github.workspace }}/project/kernel-4.9${{ env.BUILD_DATE }}.zip
+        name: Kernel 3.18.140-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
           Repo: ${{ github.event.inputs.KERNEL_REPO }}
           Branch: ${{ github.event.inputs.KERNEL_BRANCH }}
           Config: ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-          Date: ${{ env.BUILD_DATE }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
