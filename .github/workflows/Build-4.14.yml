@@ -69,14 +69,14 @@ jobs:
         cd $GITHUB_WORKSPACE/project/AnyKernel3
       
         cp $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu Image.gz-dtb
-        zip -r9 $GITHUB_WORKSPACE/project/kernel-xiaomi-4.14-${{ env.BUILD_DATE }}.zip -- *
+        zip -r9 $GITHUB_WORKSPACE/project/kernel-xiaomi-4.14.zip -- *
         
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
         
-          ${{ github.workspace }}/project/kernel-xiaomi-4.14-${{ env.BUILD_DATE }}.zip
+          ${{ github.workspace }}/project/kernel-xiaomi-4.14.zip
         name: Kernel 4.14.332-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
