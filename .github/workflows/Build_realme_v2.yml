@@ -74,7 +74,8 @@ jobs:
         export ODM_WT_EDIT=yes
         export VENDOR_EDIT=1
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-        export LD_PLUGIN_PATH=$GITHUB_WORKSPACE/project/clang/lib64
+        export LD_PLUGIN_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_PLUGIN_PATH:
+        export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_LIBRARY_PATH:
         make clean
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang HOSTCC=clang HOSTCXX=clang++  
