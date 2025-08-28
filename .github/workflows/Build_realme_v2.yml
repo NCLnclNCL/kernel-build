@@ -30,7 +30,7 @@ jobs:
 
     - name: Prepare Env
       run: |
-        sudo apt update
+        
         git config --global user.name "bot"
         git config --global user.email "bot@email.com"
         mkdir -p $GITHUB_WORKSPACE/project
