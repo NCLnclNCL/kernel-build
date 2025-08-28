@@ -35,7 +35,7 @@ jobs:
         git config --global user.email "bot@email.com"
         mkdir -p $GITHUB_WORKSPACE/project
     - name: Install depen
-      uses: actions/checkout@v4
+
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
