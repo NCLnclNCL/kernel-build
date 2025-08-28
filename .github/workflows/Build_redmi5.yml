@@ -57,7 +57,10 @@ jobs:
         cd $GITHUB_WORKSPACE/project
         git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --recurse-submodules --depth=1 &> /dev/null
         git clone -b Old2 https://github.com/NCLnclNCL/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
-
+    - name: Add ksu + susfs
+      run: | 
+       cd $GITHUB_WORKSPACE/project/linux
+       curl -LSs "https://raw.githubusercontent.com/NCLnclNCL/KernelSU/susfs-main/kernel/setup.sh" | bash -s susfs-main
     - name: Building Kernel
       run: |
         which python
