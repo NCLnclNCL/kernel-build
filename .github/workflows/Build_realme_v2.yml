@@ -52,10 +52,10 @@ jobs:
         sudo ln -s "$GITHUB_WORKSPACE/project/python2/bin/python2.7" "/usr/bin/python2"
     - name: Prepare TC
       run: |
-        mkdir -p $GITHUB_WORKSPACE/project/clang
-        CLANG_URL=https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android10-release/clang-r353983c.tar.gz
-        aria2c $CLANG_URL &> /dev/null
-        tar -C $GITHUB_WORKSPACE/project/clang/ -zxf ${CLANG_URL##*/}
+       mkdir -p $GITHUB_WORKSPACE/project/clang/
+       cd $GITHUB_WORKSPACE/project/
+       git clone https://github.com/kclinx/android_prebuilts_clang_host_linux-x86_clang-r353983c clang --depth=1 &> /dev/null
+       
     - name: Gcc 4.9
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/gcc
