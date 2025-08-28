@@ -31,10 +31,15 @@ jobs:
     - name: Prepare Env
       run: |
         sudo apt update
-        sudo apt -y install build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
         git config --global user.name "bot"
         git config --global user.email "bot@email.com"
         mkdir -p $GITHUB_WORKSPACE/project
+    - name: Install depen
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+          packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
+          execute_install_scripts: true
+          
     - name: Install python2
       run: |
         cd $GITHUB_WORKSPACE/project
