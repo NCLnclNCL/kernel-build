@@ -41,6 +41,14 @@ jobs:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
           execute_install_scripts: false
     - name: Cache Toolchain
+      id: cache_kernel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/project/linux
+          ${{ github.workspace }}/project/AnyKernel3
+        key: kernel-${{ runner.os }}-oppo-4.9.80-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
+    - name: Cache Toolchain
       id: cache
       uses: actions/cache@v4
       with:
@@ -81,6 +89,7 @@ jobs:
         tar -C $GITHUB_WORKSPACE/project/clang/ -Jxf ${CLANG_URL##*/}
         ls $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
     - name: Prepare Kernel
+      if: steps.cache_kernel.outputs.cache-hit != 'true'
       run: |
         cd $GITHUB_WORKSPACE/project
         git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --depth=1 &> /dev/null
@@ -93,6 +102,7 @@ jobs:
       run: |
         
         cd $GITHUB_WORKSPACE/project/linux
+        git pull
         PATH=$GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
         export TZ="Asia/Jakarta"
         export DATE=$(date "+%Y%m%d-%H%M%S")
