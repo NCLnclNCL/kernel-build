@@ -48,7 +48,18 @@ jobs:
           ${{ github.workspace }}/project/clang
           ${{ github.workspace }}/project/python2
         key: toolchain-${{ runner.os }}-gcc-python
-                  
+    - name: Set up ccache
+      run: |
+          mkdir -p ~/.cache
+          ccache --version
+          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-gcc-ccache-xiaomi
+          restore-keys: |
+            ${{ runner.os }}-gcc-ccache-xiaomi            
     - name: Install python2
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
@@ -91,7 +102,7 @@ jobs:
         echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
         export ARCH=arm64                
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-        make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+        make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE="ccache aarch64-linux-gnu-" CROSS_COMPILE_ARM32="ccache arm-linux-gnueabi-"
         cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
 
     - name: Prepare AK3
