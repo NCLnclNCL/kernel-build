@@ -48,12 +48,13 @@ jobs:
           ${{ github.workspace }}/project/python2
           ${{ github.workspace }}/project/gcc
         key: toolchain-${{ runner.os }}-v1
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: cache-${{ runner.os }}-v1
-        max-size: 4G
-        create-symlink: true
+    - name: Set up ccache
+      run: |
+          mkdir -p ~/.cache/bazel
+          ccache --version
+          ccache --max-size=4G
+          ccache --set-config=compression=true
+          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
         
     - name: Install python2
       if: steps.cache.outputs.cache-hit != 'true'
@@ -105,11 +106,7 @@ jobs:
         export LD_PLUGIN_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_PLUGIN_PATH:
         export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_LIBRARY_PATH:
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang HOSTCC=clang HOSTCXX=clang   -DCMAKE_C_COMPILER=clang \
-        -DCMAKE_CXX_COMPILER=clang++ \
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_CXX_COMPILER=clang++ 
+        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC="ccache clang" HOSTCC=clang HOSTCXX=clang  
         cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
 
     - name: Prepare AK3
