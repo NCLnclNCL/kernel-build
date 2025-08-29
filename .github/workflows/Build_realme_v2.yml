@@ -52,8 +52,6 @@ jobs:
       run: |
           mkdir -p ~/.cache
           ccache --version
-          ccache --max-size=4G
-          ccache --set-config=compression=true
           echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
     - name: Cache ccache
       uses: actions/cache@v4
