@@ -39,6 +39,15 @@ jobs:
       with:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
           execute_install_scripts: false
+    - name: Cache kernel
+      id: cache_kernel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/project/linux
+          ${{ github.workspace }}/project/AnyKernel3
+        key: kernel-${{ runner.os }}-realme-4.9.190-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
+        
     - name: Cache Toolchain
       id: cache
       uses: actions/cache@v4
@@ -90,6 +99,7 @@ jobs:
         tar -C $GITHUB_WORKSPACE/project/gcc/ -zxf ${CLANG_URL##*/}
         
     - name: Prepare Kernel
+      if: steps.cache_kernel.outputs.cache-hit != 'true'
       run: |
         cd $GITHUB_WORKSPACE/project
         git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --depth=1 &> /dev/null
@@ -101,6 +111,7 @@ jobs:
     - name: Building Kernel
       run: |
         cd $GITHUB_WORKSPACE/project/linux
+        git pull
         export PATH=$GITHUB_WORKSPACE/project/clang/bin:$GITHUB_WORKSPACE/project/gcc/bin:$PATH:
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo "CLANG_VER=$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')" >> $GITHUB_ENV
