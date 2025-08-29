@@ -48,7 +48,7 @@ jobs:
         path: |
           ${{ github.workspace }}/project/clang
           
-        key: toolchain-${{ runner.os }}-v1
+        key: toolchain-${{ runner.os }}-clang
     - name: Set up ccache
       run: |
           mkdir -p ~/.cache
@@ -58,9 +58,9 @@ jobs:
       uses: actions/cache@v4
       with:
           path: ~/.ccache
-          key: ${{ runner.os }}-clang-ccache
+          key: ${{ runner.os }}-clang-ccache-xiaomi
           restore-keys: |
-            ${{ runner.os }}-clang-ccache
+            ${{ runner.os }}-clang-ccache-xiaomi
            
     - name: Prepare TC
       if: steps.cache.outputs.cache-hit != 'true'
