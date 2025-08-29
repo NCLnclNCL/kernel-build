@@ -47,7 +47,7 @@ jobs:
         path: |
           ${{ github.workspace }}/project/clang
           ${{ github.workspace }}/project/python2
-        key: toolchain-${{ runner.os }}-v1
+        key: toolchain-${{ runner.os }}-gcc-python
                   
     - name: Install python2
       if: steps.cache.outputs.cache-hit != 'true'
