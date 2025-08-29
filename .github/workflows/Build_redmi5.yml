@@ -105,6 +105,7 @@ jobs:
       run: |
         which python
         cd $GITHUB_WORKSPACE/project/linux
+        git pull
         PATH=$GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
         export TZ="Asia/Jakarta"
         export DATE=$(date "+%Y%m%d-%H%M%S")
