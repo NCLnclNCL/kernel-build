@@ -41,6 +41,7 @@ jobs:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
           execute_install_scripts: true
     - name: Cache Toolchain
+      id: cache-toolchains
       uses: actions/cache@v4
       with:
         path: |
@@ -53,10 +54,8 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/project
         wget https://github.com/NCLnclNCL/kernel-build/releases/download/python2.7.18/python2.7.18.zip
-        
         7z x python2.7.18.zip   
         cd python2
-        
         sudo update-alternatives --install /usr/bin/python python $GITHUB_WORKSPACE/project/python2/bin/python2.7 1
         sudo ln -s "$GITHUB_WORKSPACE/project/python2/bin/python2.7" "/usr/bin/python2"
     - name: Prepare TC
