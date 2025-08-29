@@ -49,7 +49,19 @@ jobs:
           ${{ github.workspace }}/project/clang
           
         key: toolchain-${{ runner.os }}-v1
-        
+    - name: Set up ccache
+      run: |
+          mkdir -p ~/.cache
+          ccache --version
+          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-clang-ccache
+          restore-keys: |
+            ${{ runner.os }}-clang-ccache
+           
     - name: Prepare TC
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
@@ -79,7 +91,7 @@ jobs:
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
         make clean
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld LLVM=1 LLVM_IAS=1
+        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC="ccache clang" LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld LLVM=1 LLVM_IAS=1
         cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
 
     - name: Prepare AK3
