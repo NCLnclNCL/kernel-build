@@ -39,8 +39,18 @@ jobs:
       with:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
           execute_install_scripts: true
-          
+    - name: Cache Toolchain
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/project/clang
+          ${{ github.workspace }}/project/python2
+          ${{ github.workspace }}/project/gcc
+        key: toolchain-${{ runner.os }}-v1
+                  
     - name: Install python2
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         cd $GITHUB_WORKSPACE/project
         wget https://github.com/NCLnclNCL/kernel-build/releases/download/python2.7.18/python2.7.18.zip
@@ -48,15 +58,19 @@ jobs:
         7z x python2.7.18.zip   
         cd python2
         ls
+    - name: Setup python2 symlink
+      run: |
         sudo update-alternatives --install /usr/bin/python python $GITHUB_WORKSPACE/project/python2/bin/python2.7 1
-        sudo ln -s "$GITHUB_WORKSPACE/project/python2/bin/python2.7" "/usr/bin/python2"
+        sudo ln -sf "$GITHUB_WORKSPACE/project/python2/bin/python2.7" /usr/bin/python2
     - name: Prepare TC
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
        mkdir -p $GITHUB_WORKSPACE/project/clang/
        cd $GITHUB_WORKSPACE/project/
        git clone https://github.com/kclinx/android_prebuilts_clang_host_linux-x86_clang-r353983c clang --depth=1 &> /dev/null
        
     - name: Gcc 4.9
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/gcc
         CLANG_URL=https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/android10-release.tar.gz
