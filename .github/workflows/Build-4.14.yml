@@ -40,9 +40,18 @@ jobs:
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
-          execute_install_scripts: true
+          execute_install_scripts: false
+    - name: Cache Toolchain
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/project/clang
           
+        key: toolchain-${{ runner.os }}-v1
+        
     - name: Prepare TC
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
         CLANG_URL=$(curl -Ls https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt)
