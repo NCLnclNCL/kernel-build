@@ -48,18 +48,6 @@ jobs:
           ${{ github.workspace }}/project/clang
           ${{ github.workspace }}/project/python2
         key: toolchain-${{ runner.os }}-v1
-    - name: Set up ccache
-      run: |
-          mkdir -p ~/.cache
-          ccache --version
-          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
-    - name: Cache ccache
-      uses: actions/cache@v4
-      with:
-          path: ~/.ccache
-          key: ${{ runner.os }}-clang-ccache
-          restore-keys: |
-            ${{ runner.os }}-clang-ccache-
                    
     - name: Install python2
       if: steps.cache.outputs.cache-hit != 'true'
@@ -102,7 +90,7 @@ jobs:
         export ODM_WT_EDIT=yes
         export VENDOR_EDIT=1
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-        make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CC="ccache gcc" CXX="ccache g++"
+        make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-
         cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
 
     - name: Prepare AK3
