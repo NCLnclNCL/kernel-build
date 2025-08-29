@@ -39,9 +39,18 @@ jobs:
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
-          execute_install_scripts: true
-          
+          execute_install_scripts: false
+    - name: Cache Toolchain
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/project/clang
+          ${{ github.workspace }}/project/python2
+        key: toolchain-${{ runner.os }}-v1
+                  
     - name: Install python2
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         cd $GITHUB_WORKSPACE/project
         wget https://github.com/NCLnclNCL/kernel-build/releases/download/python2.7.18/python2.7.18.zip
@@ -49,9 +58,12 @@ jobs:
         7z x python2.7.18.zip   
         cd python2
         ls
+    - name: Setup python2 symlink
+      run: |
         sudo update-alternatives --install /usr/bin/python python $GITHUB_WORKSPACE/project/python2/bin/python2.7 1
-        sudo ln -s "$GITHUB_WORKSPACE/project/python2/bin/python2.7" "/usr/bin/python2"
+        sudo ln -sf "$GITHUB_WORKSPACE/project/python2/bin/python2.7" /usr/bin/python2
     - name: Prepare TC
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
         CLANG_URL=https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/aarch64-linux-gnu/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz
