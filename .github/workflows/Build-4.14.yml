@@ -92,6 +92,7 @@ jobs:
     - name: Building Kernel
       run: |
         cd $GITHUB_WORKSPACE/project/linux
+        git pull
         PATH=$GITHUB_WORKSPACE/project/clang/bin:$PATH
         export TZ="Asia/Jakarta"
         export DATE=$(date "+%Y%m%d-%H%M%S")
