@@ -48,7 +48,7 @@ jobs:
         path: |
           ${{ github.workspace }}/project/linux
           ${{ github.workspace }}/project/AnyKernel3
-        key: kernel-${{ runner.os }}-xiaomi-4.14.332-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
+        key: kernel-${{ runner.os }}-xiaomi-4.14.332-v2-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
         
     - name: Cache Toolchain
       id: cache
