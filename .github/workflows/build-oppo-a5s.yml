@@ -47,7 +47,7 @@ jobs:
         path: |
           ${{ github.workspace }}/project/linux
           ${{ github.workspace }}/project/AnyKernel3
-        key: kernel-${{ runner.os }}-oppo-4.9.80-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
+        key: kernel-${{ runner.os }}-oppo-4.9.80-v2-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
     - name: Cache Toolchain
       id: cache
       uses: actions/cache@v4
@@ -65,9 +65,9 @@ jobs:
       uses: actions/cache@v4
       with:
           path: ~/.ccache
-          key: ${{ runner.os }}-gcc-ccache-oppo
+          key: ${{ runner.os }}-gcc-ccache-oppo-v2
           restore-keys: |
-            ${{ runner.os }}-gcc-ccache-oppo
+            ${{ runner.os }}-gcc-ccache-oppo-v2
             
     - name: Install python2
       if: steps.cache.outputs.cache-hit != 'true'
