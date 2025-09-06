@@ -1,5 +1,5 @@
 
-name: Kernel Build realme c12 4.9 v2
+name: Kernel Build realme c12 4.9 v4
 on:
   workflow_dispatch:
     inputs:
