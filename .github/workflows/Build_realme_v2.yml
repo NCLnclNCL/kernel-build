@@ -57,7 +57,7 @@ jobs:
           ${{ github.workspace }}/project/clang
           ${{ github.workspace }}/project/python2
           ${{ github.workspace }}/project/gcc
-        key: toolchain-${{ runner.os }}-gcc-clang-python
+        key: toolchain-${{ runner.os }}-gcc-clang-python-clang12
     - name: Set up ccache
       run: |
           mkdir -p ~/.cache
@@ -102,9 +102,11 @@ jobs:
     - name: Prepare Kernel
       if: steps.cache_kernel.outputs.cache-hit != 'true'
       run: |
-        cd $GITHUB_WORKSPACE/project
-        git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --depth=1 &> /dev/null
-        git clone -b Old https://github.com/NCLnclNCL/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
+        mkdir -p $GITHUB_WORKSPACE/project/clang
+        CLANG_URL= https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/android-12.0.0_r12/clang-r416183b1.tar.gz
+        aria2c $CLANG_URL &> /dev/null
+        tar -C $GITHUB_WORKSPACE/project/clang/ -zxf ${CLANG_URL##*/}
+        
     - name: Add ksu + susfs
       run: | 
        cd $GITHUB_WORKSPACE/project/linux
