@@ -24,6 +24,7 @@ jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-latest
+    environment: version
     permissions:
       contents: write
     steps:
