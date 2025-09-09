@@ -49,7 +49,7 @@ jobs:
         path: |
           ${{ github.workspace }}/project/linux
           ${{ github.workspace }}/project/AnyKernel3
-        key: kernel-${{ runner.os }}-xiaomi-4.14.332-v${{ vars.VERSION }}-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
+        key: kernel-${{ runner.os }}-xiaomi-4.14.332++-v${{ vars.VERSION }}-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
         
     - name: Cache Toolchain
       id: cache
@@ -68,9 +68,9 @@ jobs:
       uses: actions/cache@v4
       with:
           path: ~/.ccache
-          key: ${{ runner.os }}-clang-ccache-xiaomi-mtk-v${{ vars.VERSION }}
+          key: ${{ runner.os }}-clang-ccache-xiaomi-mtk+-v${{ vars.VERSION }}
           restore-keys: |
-            ${{ runner.os }}-clang-ccache-xiaomi-mtk-v${{ vars.VERSION }}
+            ${{ runner.os }}-clang-ccache-xiaomi-mtk+-v${{ vars.VERSION }}
            
     - name: Prepare TC
       if: steps.cache.outputs.cache-hit != 'true'
