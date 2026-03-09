@@ -1,4 +1,4 @@
-name: Kernel Build redmi 7
+name: Kernel Build lk
 on:
   workflow_dispatch:
     inputs:
