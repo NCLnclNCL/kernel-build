@@ -23,7 +23,7 @@ jobs:
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         mkdir -p $GITHUB_WORKSPACE/project
         git clone https://github.com/R0rt1z2/kaeru.git kaeru && cd kaeru
-        pip install -r requirements.txt
+        pip install -r $GITHUB_WORKSPACE/project/kaeru/untils/requirements.txt
         ./build.sh ironman $GITHUB_WORKSPACE/project/kaeru/files/lk_tecno.img
     - name: Upload Release
       uses: softprops/action-gh-release@v1
