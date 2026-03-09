@@ -26,11 +26,12 @@ jobs:
         git clone https://github.com/NCLnclNCL/kaeru.git kaeru && cd kaeru
         pip install -r $GITHUB_WORKSPACE/project/kaeru/utils/requirements.txt
         ./build.sh ironman $GITHUB_WORKSPACE/project/kaeru/files/lk_tecno.img
+        zip -r9 $GITHUB_WORKSPACE/project/lk.zip -- *
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-         ${{ github.workspace }}/project/kaeru/
+         ${{ github.workspace }}/project/lk.zip
         name: Kernel 4.9.112-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
