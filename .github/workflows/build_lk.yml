@@ -1,0 +1,37 @@
+name: Kernel Build redmi 7
+on:
+  workflow_dispatch:
+    inputs:
+      KERNEL_REPO:
+        description: 'KERNEL_REPO'
+        required: false
+        default: ' https://github.com/NCLnclNCL/Xiaomi_Kernel_OpenSource'
+jobs:
+  build:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    environment: version
+    permissions:
+      contents: write
+    steps:
+    - name: Prepare Env
+      run: |
+        sudo apt-get update
+        sudo apt-get install gcc-arm-linux-gnueabihf python3 python3-pip git make
+        export TZ="Asia/Jakarta"
+        export DATE=$(date "+%Y%m%d-%H%M%S")
+        echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
+        mkdir -p $GITHUB_WORKSPACE/project
+        git clone https://github.com/R0rt1z2/kaeru.git kaeru && cd kaeru
+        ./build.sh ironman $GITHUB_WORKSPACE/project/kaeru/files/lk_tecno.img
+    - name: Upload Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+         ${{ github.workspace }}/project/kaeru/
+        name: Kernel 4.9.112-${{ env.BUILD_DATE }}
+        tag_name: ${{ env.BUILD_DATE }}
+        body: |
+          Repo: ${{ github.event.inputs.KERNEL_REPO }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
