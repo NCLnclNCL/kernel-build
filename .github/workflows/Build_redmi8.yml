@@ -114,6 +114,7 @@ jobs:
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
         export ARCH=arm64                
+        export TARGET_PRODUCT=olive
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         make -j$(nproc --all) O=out ARCH=$ARCH CROSS_COMPILE="ccache aarch64-linux-gnu-" CROSS_COMPILE_ARM32="ccache arm-linux-gnueabi-"
         cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
