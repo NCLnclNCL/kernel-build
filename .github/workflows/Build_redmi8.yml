@@ -49,7 +49,7 @@ jobs:
         path: |
           ${{ github.workspace }}/project/linux
           ${{ github.workspace }}/project/AnyKernel3
-        key: kernel-${{ runner.os }}-xiaomi-4.9.112-v${{ vars.VERSION }}-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
+        key: kernel-${{ runner.os }}-xiaomi-4.9.112-smd439-v${{ vars.VERSION }}-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
         
     - name: Cache Toolchain
       id: cache
@@ -68,9 +68,9 @@ jobs:
       uses: actions/cache@v4
       with:
           path: ~/.ccache
-          key: ${{ runner.os }}-gcc-ccache-xiaomi-redmi-7-v${{ vars.VERSION }}
+          key: ${{ runner.os }}-gcc-ccache-xiaomi-redmi-8-v${{ vars.VERSION }}
           restore-keys: |
-            ${{ runner.os }}-gcc-ccache-xiaomi-redmi-7-v${{ vars.VERSION }}           
+            ${{ runner.os }}-gcc-ccache-xiaomi-redmi-8-v${{ vars.VERSION }}           
     - name: Install python2
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
