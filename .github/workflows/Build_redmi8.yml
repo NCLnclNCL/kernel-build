@@ -98,7 +98,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/project
         git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --depth=1 &> /dev/null
-        git clone -b dtbo https://github.com/NCLnclNCL/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
+        git clone -b No_ramdisk https://github.com/NCLnclNCL/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
     - name: Add ksu + susfs
       run: | 
        cd $GITHUB_WORKSPACE/project/linux
@@ -123,7 +123,7 @@ jobs:
     - name: Prepare AK3
       run: |
         cd $GITHUB_WORKSPACE/project/AnyKernel3
-      
+        git pull
         cp $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu Image.gz-dtb
         zip -r9 $GITHUB_WORKSPACE/project/kernel-xiaomi-4.9.112.zip -- *
         
