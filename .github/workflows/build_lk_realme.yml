@@ -1,0 +1,40 @@
+name: Kernel Build lk realme c12
+on:
+  workflow_dispatch:
+    inputs:
+      KERNEL_REPO:
+        description: 'KERNEL_REPO'
+        required: false
+        default: 'https://github.com/NCLnclNCL/kaeru'
+jobs:
+  build:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    environment: version
+    permissions:
+      contents: write
+    steps:
+    - name: Prepare Env
+      run: |
+        sudo apt-get update
+        sudo apt-get install gcc-arm-linux-gnueabihf python3 python3-pip git make
+        export TZ="Asia/Jakarta"
+        export DATE=$(date "+%Y%m%d-%H%M%S")
+        echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
+        mkdir -p $GITHUB_WORKSPACE/project
+        cd $GITHUB_WORKSPACE/project
+        git clone https://github.com/NCLnclNCL/kaeru.git kaeru && cd kaeru
+        pip install -r $GITHUB_WORKSPACE/project/kaeru/utils/requirements.txt
+        ./build.sh rmx2180 $GITHUB_WORKSPACE/project/kaeru/files/lk_custom_fastboot.bin
+        zip -r9 $GITHUB_WORKSPACE/project/lk.zip -- *
+    - name: Upload Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+         ${{ github.workspace }}/project/lk.zip
+        name: realme-c12-${{ env.BUILD_DATE }}
+        tag_name: ${{ env.BUILD_DATE }}
+        body: |
+          Repo: ${{ github.event.inputs.KERNEL_REPO }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
