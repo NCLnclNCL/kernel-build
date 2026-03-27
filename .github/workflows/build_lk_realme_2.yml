@@ -1,4 +1,4 @@
-name: Kernel Build lk realme c12
+name: Kernel Build lk realme c12 2
 on:
   workflow_dispatch:
     inputs:
