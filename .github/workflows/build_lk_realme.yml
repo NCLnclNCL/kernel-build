@@ -26,7 +26,7 @@ jobs:
         git clone https://github.com/NCLnclNCL/kaeru.git kaeru && cd kaeru
         git pull
         pip install -r $GITHUB_WORKSPACE/project/kaeru/utils/requirements.txt
-        ./build.sh rmx2180 $GITHUB_WORKSPACE/project/kaeru/files/lk_custom_fastboot.img
+        ./build.sh rmx2189 $GITHUB_WORKSPACE/project/kaeru/files/lk_custom_fastboot.img
         zip -r9 $GITHUB_WORKSPACE/project/lk.zip -- *
     - name: Upload Release
       uses: softprops/action-gh-release@v1
