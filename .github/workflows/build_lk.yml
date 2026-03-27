@@ -1,4 +1,4 @@
-name: Kernel Build lk
+name: Kernel Build lk tecno pova 2
 on:
   workflow_dispatch:
     inputs:
