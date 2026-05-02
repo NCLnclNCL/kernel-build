@@ -19,8 +19,8 @@ jobs:
 
       - name: Build docker image
         run: |
-          docker pull NCLnclNCL/kernel-build:1.4
-          docker tag NCLnclNCL/kernel-build:1.4 router_build
+          docker pull waujito/tplax1500gpl:1.4
+          docker tag waujito/tplax1500gpl:1.4 router_build
 
       - name: Prepare gpl code
         run: |
