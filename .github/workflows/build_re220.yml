@@ -18,7 +18,7 @@ jobs:
 
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-          packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl patch bzip2 flex gettext pkg-config libz-dev libc unzip gcc g++ ccache make python3
+          packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl patch bzip2 flex gettext pkg-config libz-dev libc unzip g++ ccache make python3
           execute_install_scripts: false
     - name: Prepare Env
       run: |
@@ -27,6 +27,10 @@ jobs:
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         mkdir -p $GITHUB_WORKSPACE/project
         cd $GITHUB_WORKSPACE/project
+        gcc --version
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100
+        gcc --version
+        sudo apt-get install gcc-4.8
         git clone https://github.com/NCLnclNCL/re220v1_gplcode re220 && cd re220
         make 
         make -j$(nproc --all) -V=s
