@@ -1,4 +1,5 @@
 name: Build re220
+
 on:
   workflow_dispatch:
     inputs:
@@ -6,43 +7,59 @@ on:
         description: 'KERNEL_REPO'
         required: false
         default: 'https://github.com/NCLnclNCL/re220v1_gplcode'
+
 jobs:
   build:
-    if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-22.04
-    environment: version
-    permissions:
-      contents: write
-    steps:
-    - name: Install depen
 
-      uses: awalsh128/cache-apt-pkgs-action@latest
-      with:
-          packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl patch bzip2 flex gettext pkg-config libz-dev libc unzip g++ ccache make python3
-          execute_install_scripts: false
-    - name: Prepare Env
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Pull Docker image (Ubuntu 18.04)
       run: |
-        export TZ="Asia/Jakarta"
-        export DATE=$(date "+%Y%m%d-%H%M%S")
-        echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
-        mkdir -p $GITHUB_WORKSPACE/project
-        cd $GITHUB_WORKSPACE/project
-        gcc --version
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 100
-        gcc --version
-        sudo apt-get install gcc-4.8
-        git clone https://github.com/NCLnclNCL/re220v1_gplcode re220 && cd re220
-        make 
-        make -j$(nproc --all) -V=s
-        zip -r9 $GITHUB_WORKSPACE/project/lk.zip -- *
+        docker pull ubuntu:18.04
+
+    - name: Build inside Docker
+      run: |
+        docker run --rm -t \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          ubuntu:18.04 /bin/bash -c '
+
+          apt update
+
+          DEBIAN_FRONTEND=noninteractive apt install -y \
+            build-essential \
+            gcc-4.6 g++-4.6 \
+            gawk flex bison gettext \
+            libncurses5-dev zlib1g-dev libssl-dev \
+            xsltproc rsync wget unzip \
+            python2 perl autopoint libtool
+
+          # set gcc 4.6 default
+          update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 100
+          update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 100
+
+          gcc --version
+
+          mkdir -p project
+          cd project
+
+          git clone ${{ github.event.inputs.KERNEL_REPO }} re220
+          cd re220
+
+          # build
+          make V=s -j1
+
+          zip -r9 /workspace/re220_build.zip .
+        '
+
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
-        files: |
-         ${{ github.workspace }}/project/lk.zip
-        name: tecno-pova2-${{ env.BUILD_DATE }}
-        tag_name: ${{ env.BUILD_DATE }}
-        body: |
-          Repo: ${{ github.event.inputs.KERNEL_REPO }}
+        files: re220_build.zip
+        tag_name: build-${{ github.run_id }}
+        name: re220-build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
