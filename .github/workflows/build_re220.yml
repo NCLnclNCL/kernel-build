@@ -18,7 +18,7 @@ jobs:
 
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-          packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
+          packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl patch bzip2 flex gettext pkg-config libz-dev libc unzip gcc g++ ccache make python3
           execute_install_scripts: false
     - name: Prepare Env
       run: |
@@ -28,6 +28,7 @@ jobs:
         mkdir -p $GITHUB_WORKSPACE/project
         cd $GITHUB_WORKSPACE/project
         git clone https://github.com/NCLnclNCL/re220v1_gplcode re220 && cd re220
+        make 
         make -j$(nproc --all)
         zip -r9 $GITHUB_WORKSPACE/project/lk.zip -- *
     - name: Upload Release
