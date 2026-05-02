@@ -1,0 +1,43 @@
+name: Build re220
+on:
+  workflow_dispatch:
+    inputs:
+      KERNEL_REPO:
+        description: 'KERNEL_REPO'
+        required: false
+        default: 'https://github.com/NCLnclNCL/re220v1_gplcode'
+jobs:
+  build:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+    environment: version
+    permissions:
+      contents: write
+    steps:
+    - name: Install depen
+
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+          packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
+          execute_install_scripts: false
+    - name: Prepare Env
+      run: |
+        export TZ="Asia/Jakarta"
+        export DATE=$(date "+%Y%m%d-%H%M%S")
+        echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
+        mkdir -p $GITHUB_WORKSPACE/project
+        cd $GITHUB_WORKSPACE/project
+        git clone https://github.com/NCLnclNCL/re220v1_gplcode re220 && cd re220
+        make -j$(nproc --all)
+        zip -r9 $GITHUB_WORKSPACE/project/lk.zip -- *
+    - name: Upload Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+         ${{ github.workspace }}/project/lk.zip
+        name: tecno-pova2-${{ env.BUILD_DATE }}
+        tag_name: ${{ env.BUILD_DATE }}
+        body: |
+          Repo: ${{ github.event.inputs.KERNEL_REPO }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
