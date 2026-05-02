@@ -31,4 +31,13 @@ jobs:
           as --version
       - name: Build GPL
         run: |
-            docker run --rm -v $(pwd)/router:/router --user 1001 router_build bash -c "cd /router && ls && make SHELL=/bin/bash V=s -j$(nproc)"
+               docker run --rm -v $(pwd)/router:/router --user 1001 router_build bash -c "
+               export PATH=/router/toolchain/buildroot-gcc463/usr/bin:\$PATH
+               export CROSS_COMPILE=mipsel-buildroot-linux-uclibc-
+               cd /router
+               echo '=== TOOLCHAIN CHECK ==='
+               echo CROSS_COMPILE=\$CROSS_COMPILE
+               which \${CROSS_COMPILE}gcc
+               which \${CROSS_COMPILE}as
+
+               make SHELL=/bin/bash V=s -j\$(nproc)"
