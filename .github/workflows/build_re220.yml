@@ -1,65 +1,35 @@
-name: Build re220
+name: Build RE220
 
 on:
+  push:
+    # branches:
+      # - main
+    paths-ignore:
+      - 'README.md'
+
   workflow_dispatch:
-    inputs:
-      KERNEL_REPO:
-        description: 'KERNEL_REPO'
-        required: false
-        default: 'https://github.com/NCLnclNCL/re220v1_gplcode'
+
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+  build_gpl:
+    name: build ${{ matrix.gplv }}
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Pull Docker image (Ubuntu 16.04)
-      run: |
-        docker pull ubuntu:16.04
+      - name: Build docker image
+        run: |
+          docker pull NCLnclNCL/kernel-build:1.4
+          docker tag NCLnclNCL/kernel-build:1.4 router_build
 
-    - name: Build inside Docker
-      run: |
-        docker run --rm -t \
-          -v ${{ github.workspace }}:/workspace \
-          -w /workspace \
-          ubuntu:18.04 /bin/bash -c '
+      - name: Prepare gpl code
+        run: |
+          git clone https://github.com/NCLnclNCL/re220v1_gplcode router
+          cd router
 
-          apt update
-
-          DEBIAN_FRONTEND=noninteractive apt install -y \
-            build-essential \
-            gcc-4.7 g++-4.7 \
-            gawk flex bison gettext \
-            libncurses5-dev zlib1g-dev libssl-dev \
-            xsltproc rsync wget unzip \
-            python2 perl autopoint libtool
-
-          # set gcc 4.6 default
-          update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 100
-          update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 100
-
-          gcc --version
-
-          mkdir -p project
-          cd project
-
-          git clone ${{ github.event.inputs.KERNEL_REPO }} re220
-          cd re220
-
-          # build
-          make V=s -j1
-
-          zip -r9 /workspace/re220_build.zip .
-        '
-
-    - name: Upload Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: re220_build.zip
-        tag_name: build-${{ github.run_id }}
-        name: re220-build
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build GPL
+        run: |
+          set -o pipefail
+            docker run --rm -v ./router:/router --user 1001 router_build bash -c "make SHELL=/bin/bash V=s -j$(nproc)"
