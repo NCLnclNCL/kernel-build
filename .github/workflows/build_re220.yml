@@ -29,5 +29,4 @@ jobs:
 
       - name: Build GPL
         run: |
-          set -o pipefail
-            docker run --rm -v ./router:/router --user 1001 router_build bash -c "make SHELL=/bin/bash V=s -j$(nproc)"
+            docker run --rm -v $(pwd)/router:/router --user 1001 router_build bash -c "cd /router && ls && make SHELL=/bin/bash V=s -j$(nproc)"
