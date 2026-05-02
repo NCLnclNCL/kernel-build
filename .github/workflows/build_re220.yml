@@ -16,9 +16,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Pull Docker image (Ubuntu 18.04)
+    - name: Pull Docker image (Ubuntu 16.04)
       run: |
-        docker pull ubuntu:18.04
+        docker pull ubuntu:16.04
 
     - name: Build inside Docker
       run: |
@@ -38,8 +38,8 @@ jobs:
             python2 perl autopoint libtool
 
           # set gcc 4.6 default
-          update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 100
-          update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 100
+          update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 100
+          update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 100
 
           gcc --version
 
