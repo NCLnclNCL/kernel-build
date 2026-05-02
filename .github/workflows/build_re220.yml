@@ -29,4 +29,6 @@ jobs:
 
       - name: Build GPL
         run: |
+            which as
+            as --version
             docker run --rm -v $(pwd)/router:/router --user 1001 router_build bash -c "cd /router && ls && make SHELL=/bin/bash V=s -j$(nproc)"
