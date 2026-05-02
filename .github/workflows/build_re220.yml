@@ -8,7 +8,11 @@ on:
       - 'README.md'
 
   workflow_dispatch:
-
+    inputs:
+      KERNEL_REPO:
+        description: 'KERNEL_REPO'
+        required: false
+        default: 'https://github.com/NCLnclNCL/re220v1_gplcode'
 
 jobs:
   build_gpl:
