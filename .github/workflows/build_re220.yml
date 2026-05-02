@@ -26,9 +26,9 @@ jobs:
         run: |
           git clone https://github.com/NCLnclNCL/re220v1_gplcode router
           cd router
-
+          export PATH=/router/toolchain/buildroot-gcc463/usr/bin:$PATH
+          which as
+          as --version
       - name: Build GPL
         run: |
-            which as
-            as --version
             docker run --rm -v $(pwd)/router:/router --user 1001 router_build bash -c "cd /router && ls && make SHELL=/bin/bash V=s -j$(nproc)"
