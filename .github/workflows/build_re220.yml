@@ -31,7 +31,7 @@ jobs:
 
           DEBIAN_FRONTEND=noninteractive apt install -y \
             build-essential \
-            gcc-4.6 g++-4.6 \
+            gcc-4.7 g++-4.7 \
             gawk flex bison gettext \
             libncurses5-dev zlib1g-dev libssl-dev \
             xsltproc rsync wget unzip \
