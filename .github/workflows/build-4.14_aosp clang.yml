@@ -41,6 +41,14 @@ jobs:
       with:
           packages: build-essential bc bison flex libssl-dev libncurses-dev libelf-dev git curl unzip gcc g++ ccache make python3
           execute_install_scripts: false
+    - name: Cache kernel
+      id: cache_kernel
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/project/linux
+          ${{ github.workspace }}/project/AnyKernel3
+        key: kernel-${{ runner.os }}-xiaomi-4.14.332+-aosp-clang-v${{ vars.VERSION }}-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
     - name: Cache Toolchain
       id: cache
       uses: actions/cache@v4
@@ -49,6 +57,18 @@ jobs:
           ${{ github.workspace }}/project/clang
           ${{ github.workspace }}/project/gcc
         key: toolchain-${{ runner.os }}-aosp-clang-gcc
+    - name: Set up ccache
+      run: |
+          mkdir -p ~/.cache
+          ccache --version
+          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-aosp-clang-ccache-xiaomi-mtk+-v${{ vars.VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-aosp-clang-ccache-xiaomi-mtk+-v${{ vars.VERSION }}
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
@@ -73,13 +93,15 @@ jobs:
     - name: Building Kernel
       run: |
         cd $GITHUB_WORKSPACE/project/linux
-        export PATH=$GITHUB_WORKSPACE/project/clang/bin:$GITHUB_WORKSPACE/project/gcc/bin:$PATH:
-        ls $GITHUB_WORKSPACE/project/gcc/bin
-        echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
+        git pull
+        PATH=$GITHUB_WORKSPACE/project/clang/bin:$PATH
+        export TZ="Asia/Jakarta"
+        export DATE=$(date "+%Y%m%d-%H%M%S")
+        echo "BUILD_DATE=$(date "+%Y%m%d%H%M%S")" >> $GITHUB_ENV
         echo "CLANG_VER=$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')" >> $GITHUB_ENV
         export ARCH=arm64
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
+        make clean
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         export LD_PLUGIN_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_PLUGIN_PATH:
         export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_LIBRARY_PATH:
@@ -92,15 +114,15 @@ jobs:
         cd $GITHUB_WORKSPACE/project/AnyKernel3
       
         cp $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu Image.gz-dtb
-        zip -r9 $GITHUB_WORKSPACE/project/OverHeat-dev-ksu.zip -- *
+        zip -r9 $GITHUB_WORKSPACE/project/kernel-xiaomi-4.14-aosp-clang.zip -- *
         
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
         
-          ${{ github.workspace }}/project/OverHeat-dev-ksu.zip
-        name: OverHeat-${{ env.BUILD_DATE }}
+          ${{ github.workspace }}/project/kernel-xiaomi-4.14-aosp-clang.zip
+        name: Kernel 4.14.332-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
           Repo: ${{ github.event.inputs.KERNEL_REPO }}
