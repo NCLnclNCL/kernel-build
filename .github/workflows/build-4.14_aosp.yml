@@ -67,7 +67,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/project/linux
         export PATH=$GITHUB_WORKSPACE/project/clang/bin:$GITHUB_WORKSPACE/project/gcc/bin:$PATH:
-        ls project/gcc/bin
+        ls $GITHUB_WORKSPACE/project/gcc/bin
         echo "BUILD_DATE=$(date "+%Y%m%d%H%M")" >> $GITHUB_ENV
         echo "KERNEL_VER=$(make kernelversion)" >> $GITHUB_ENV
         echo "CLANG_VER=$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')" >> $GITHUB_ENV
