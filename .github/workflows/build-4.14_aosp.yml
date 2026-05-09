@@ -6,11 +6,11 @@ on:
       KERNEL_REPO:
         description: 'KERNEL_REPO'
         required: true
-        default: 'https://github.com/NCLnclNCL/android_kernel_xiaomi_mt6785'
+        default: 'https://github.com/NCLnclNCL/android_kernel_xiaomi_rosemary'
       KERNEL_BRANCH:
         description: 'KERNEL_BRANCH'
         required: true
-        default: 'lineage20'
+        default: 'rosemary-13'
       KERNEL_DEFCONFIG:
         description: 'KERNEL_DEFCONFIG'
         required: true
@@ -39,16 +39,24 @@ jobs:
     - name: Prepare TC
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
-        CLANG_URL=https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android13-release/clang-r450784d.tar.gz 
+        CLANG_URL=https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/android-11.0.0_r3/clang-r383902.tar.gz 
         aria2c $CLANG_URL &> /dev/null
         tar -C $GITHUB_WORKSPACE/project/clang/ -zxf ${CLANG_URL##*/}
-
+    - name: Gcc 4.9
+      run: |
+        mkdir -p $GITHUB_WORKSPACE/project/gcc
+        CLANG_URL=https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/x86/x86_64-linux-android-4.9/+archive/refs/heads/android11-release.tar.gz
+        aria2c $CLANG_URL &> /dev/null
+        tar -C $GITHUB_WORKSPACE/project/gcc/ -zxf ${CLANG_URL##*/}
     - name: Prepare Kernel
       run: |
         cd $GITHUB_WORKSPACE/project
         git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --recurse-submodules --depth=1 &> /dev/null
         git clone -b master https://github.com/zainarbani/AnyKernel3 AnyKernel3 --depth=1 &> /dev/null
-
+    - name: Add ksu + susfs
+      run: | 
+       cd $GITHUB_WORKSPACE/project/linux
+       curl -LSs "https://raw.githubusercontent.com/NCLnclNCL/KernelSU/susfs-main/kernel/setup.sh" | bash -s susfs-main
     - name: Building Kernel
       run: |
         cd $GITHUB_WORKSPACE/project/linux
@@ -59,8 +67,10 @@ jobs:
         export ARCH=arm64
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
-        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar HOSTLD=ld.lld LLVM=1 LLVM_IAS=1
-        cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
+        export LD_PLUGIN_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_PLUGIN_PATH:
+        export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_LIBRARY_PATH:
+        make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
+        make -j$(nproc --all) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC="ccache clang" HOSTCC=clang HOSTCXX=clang          cp out/arch/arm64/boot/Image.gz-dtb $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu
 
     - name: Prepare AK3
       run: |
