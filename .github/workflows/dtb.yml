@@ -1,0 +1,41 @@
+name: Extract DTB to DTS
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/*.dtb'
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install dtc
+        run: |
+          sudo apt update
+          sudo apt install -y device-tree-compiler
+
+      - name: Create output directory
+        run: mkdir -p out
+
+      - name: Extract all DTB files
+        run: |
+          find . -type f -name "*.dtb" | while read dtb; do
+            name=$(basename "$dtb" .dtb)
+
+            echo "Extracting $dtb -> out/${name}.dts"
+
+            dtc -I dtb -O dts \
+              -o "out/${name}.dts" \
+              "$dtb"
+          done
+
+      - name: Upload DTS files
+        uses: actions/upload-artifact@v4
+        with:
+          name: extracted-dts
+          path: out/
