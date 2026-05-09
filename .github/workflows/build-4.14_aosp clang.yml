@@ -1,5 +1,5 @@
 
-name: Kernel Build 4.14 aosp
+name: Kernel Build 4.14 aosp clang
 on:
   workflow_dispatch:
     inputs:
