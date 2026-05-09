@@ -122,7 +122,7 @@ jobs:
         files: |
         
           ${{ github.workspace }}/project/kernel-xiaomi-4.14-aosp-clang.zip
-        name: Kernel 4.14.332-${{ env.BUILD_DATE }}
+        name: Kernel 4.14.332-aosp-clang-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
           Repo: ${{ github.event.inputs.KERNEL_REPO }}
