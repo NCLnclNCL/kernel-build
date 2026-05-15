@@ -104,7 +104,6 @@ jobs:
         echo "CLANG_VER=$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')" >> $GITHUB_ENV
         export ARCH=arm64
         export KBUILD_COMPILER_STRING="$(clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')"
-        make clean
         make O=out ARCH=$ARCH ${{ github.event.inputs.KERNEL_DEFCONFIG }}
         export LD_PLUGIN_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_PLUGIN_PATH:
         export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/project/clang/lib64:$LD_LIBRARY_PATH:
