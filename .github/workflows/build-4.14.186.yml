@@ -48,7 +48,7 @@ jobs:
         path: |
           ${{ github.workspace }}/project/linux
           ${{ github.workspace }}/project/AnyKernel3
-        key: kernel-${{ runner.os }}-xiaomi-4.14.186-v${{ vars.VERSION }}-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
+        key: kernel-${{ runner.os }}-xiaomi-4.14.186+-v${{ vars.VERSION }}-${{ github.event.inputs.KERNEL_BRANCH }}-${{ github.event.inputs.KERNEL_REPO }}
     - name: Cache Toolchain
       id: cache
       uses: actions/cache@v4
@@ -116,14 +116,14 @@ jobs:
         cd $GITHUB_WORKSPACE/project/AnyKernel3
       
         cp $GITHUB_WORKSPACE/project/Image.gz-dtb-ksu Image.gz-dtb
-        zip -r9 $GITHUB_WORKSPACE/project/kernel-xiaomi-4.14.186.zip -- *
+        zip -r9 $GITHUB_WORKSPACE/project/kernel-xiaomi-4.14.186+.zip -- *
         
     - name: Upload Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
         
-          ${{ github.workspace }}/project/kernel-xiaomi-4.14.186.zip
+          ${{ github.workspace }}/project/kernel-xiaomi-4.14.186+.zip
         name: Kernel 4.14.186-${{ env.BUILD_DATE }}
         tag_name: ${{ env.BUILD_DATE }}
         body: |
