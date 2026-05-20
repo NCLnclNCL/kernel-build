@@ -102,7 +102,7 @@ jobs:
     - name: Add ksu + susfs
       run: | 
        cd $GITHUB_WORKSPACE/project/linux
-       curl -LSs "https://raw.githubusercontent.com/NCLnclNCL/KernelSU/susfs-main/kernel/setup.sh" | bash -s susfs-main
+       curl -LSs "https://raw.githubusercontent.com/NCLnclNCL/KernelSU/main/kernel/setup.sh" | bash -s main
     - name: Building Kernel
       run: |
         which python
