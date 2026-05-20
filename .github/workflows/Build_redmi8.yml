@@ -94,7 +94,6 @@ jobs:
         ls $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
 
     - name: Prepare Kernel
-      if: steps.cache_kernel.outputs.cache-hit != 'true'
       run: |
         cd $GITHUB_WORKSPACE/project
         git clone -b ${{ github.event.inputs.KERNEL_BRANCH }} ${{ github.event.inputs.KERNEL_REPO }} linux --depth=1 &> /dev/null
