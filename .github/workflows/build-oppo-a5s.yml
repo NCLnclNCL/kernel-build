@@ -85,9 +85,7 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p $GITHUB_WORKSPACE/project/clang
-        CLANG_URL=https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/aarch64-linux-gnu/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz
-        aria2c $CLANG_URL  &> /dev/null
-        tar -C $GITHUB_WORKSPACE/project/clang/ -Jxf ${CLANG_URL##*/}
+        git clone --depth=1 https://github.com/Nickdv9/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.git $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
         ls $GITHUB_WORKSPACE/project/clang/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu
     - name: Prepare Kernel
       if: steps.cache_kernel.outputs.cache-hit != 'true'
